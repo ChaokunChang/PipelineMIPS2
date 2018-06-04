@@ -1,17 +1,18 @@
 `timescale 1ns / 1ps
 //aludec
 module aludec(
-	input [1:0]aluop,
+	input [2:0]aluop,
 	input [5:0]func,
 	output reg shift,
 	output reg [2:0]alucontrol
 );
 	always @(*)
 	case(aluop)
-		2'b00: begin alucontrol = 3'b010; shift = 0; end //add
-		2'b01: begin alucontrol = 3'b110; shift = 0; end//sub
-		2'b11: begin alucontrol = 3'b001; shift = 0; end//or
-		2'b10: //look at func
+		3'b000: begin alucontrol = 3'b010; shift = 0; end //add
+		3'b001: begin alucontrol = 3'b110; shift = 0; end//sub
+		3'b011: begin alucontrol = 3'b001; shift = 0; end//or
+		3'b100: begin alucontrol = 3'b000; shift = 0; end//and
+		3'b010: //look at func
 			case(func)
 				6'b000000: begin alucontrol = 3'b011; shift = 1; end //SLL/nop 
 				6'b100000: begin alucontrol = 3'b010; shift = 0; end //add

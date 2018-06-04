@@ -16,7 +16,7 @@ module ControlUnit(
 	output reg [31:0]disdata
 );
 
-wire [1:0]aluopD;
+wire [2:0]aluopD;
 wire [1:0]cn3t;
 assign cn3t = cn3[8:7];
 
@@ -52,7 +52,7 @@ always @(*)
     2'b00: disdata = { {3'b000, mem2regE }, {3'b000, mem2regM },{3'b000, mem2regW }, {3'b000, branchD },  {3'b000, regwriteE }, {3'b000, regwriteM },{3'b000, regwriteW }, {1'b0, regdstE }};
     2'b01: disdata = { {4'b0000}, {4'b0000}, { 4{opD[5]} }, { 4{opD[4]} }, { 4{opD[3]} }, { 4{opD[2]} }, { 4{opD[1]} }, { 4{opD[0]} } };
     2'b10: disdata = { {4'b0000}, {4'b0000}, { 4{funcD[5]} }, { 4{funcD[4]} }, { 4{funcD[3]} }, { 4{funcD[2]} }, { 4{funcD[1]} }, { 4{funcD[0]} } };
-    2'b11: disdata = { 8{2'b00, aluopD } };
+    2'b11: disdata = { 8{1'b0, aluopD } };
     default: disdata = { {3'b000, mem2regE }, {3'b000, mem2regM },{3'b000, mem2regW }, {3'b000, branchD },  {3'b000, regwriteE }, {3'b000, regwriteM },{3'b000, regwriteW }, {1'b0, regdstE }};
     endcase
 
