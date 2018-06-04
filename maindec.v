@@ -19,7 +19,7 @@ case(OP)
 //addi
 	6'b001000: CONTROLS = 11'b101_000_00_000;//op:000 :add
 //andi
-	6'b001100: CONTROLS = 11'b101_000_00_a00;//op:100 :and
+	6'b001100: CONTROLS = 11'b101_000_00_100;//op:100 :and
 //ori
 	6'b001101: CONTROLS = 11'b101_000_00_011;//op:011 :or
 //slti

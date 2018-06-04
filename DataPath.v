@@ -1,12 +1,13 @@
 `timescale 1ns / 1ps
-
+//add shiftE in inputs and ALU logic;
+//add srca3E in wires
 module DataPath(
 	input clk,reset,
 	input mem2regE,mem2regM,mem2regW,
     input pcsrcD,branchD,
     input alusrcE,regdstE,
     input regwriteE,regwriteM,regwriteW,
-    input jumpD,
+    input jumpD,shiftE,
     input [2:0]alucontrolE,
 	output equalD,
 	output [31:0]pcF,
@@ -34,12 +35,13 @@ wire [4:0] writeregE,writeregM,writeregW;
 wire flushD;
 wire [31:0] pcnextFD,pcnextbrFD,pcplus4F,pcbranchD;
 wire [31:0] signimmD,signimmE,signimmshD;
-wire [31:0] srcaD,srca2D,srcaE,srca2E;
+wire [31:0] srcaD,srca2D,srcaE,srca2E,srca3E;
 wire [31:0] srcbD,srcb2D,srcbE,srcb2E,srcb3E;
 wire [31:0] pcplus4D,instrD;
 wire [31:0] aluoutE,aluoutW;
 wire [31:0] readdataW,resultW;
 wire zeroE;
+wire [31:0]sa;
 
 hazard hd(rsD,rtD,rsE,rtE,writeregE,writeregM,writeregW,
         regwriteE,regwriteM,regwriteW,
@@ -76,7 +78,7 @@ assign funcD = instrD[5:0];
 assign rsD = instrD[25:21];
 assign rtD = instrD[20:16];
 assign rdD = instrD[15:11];
-
+assign sa = { {27{0}},instr[10:6]};
 assign flushD = pcsrcD | jumpD;
 
 
@@ -89,8 +91,9 @@ floprc #(5) r5E(clk,reset,flushE,rdD,rdE);
 floprc #(5) r6E(clk,reset,flushE,rtD,rtE);
 mux3 #(32) forwardaemux(srcaE,resultW,aluoutM,forwardaE,srca2E);
 mux3 #(32) forwardbemux(srcbE,resultW,aluoutM,forwardbE,srcb2E);
+mux2 #(32) srcamux(srca2E,sa,shiftE,srca3E);
 mux2 #(32) srcbmux(srcb2E,signimmE,alusrcE,srcb3E);
-ALU aludata(srca2E,srcb3E,alucontrolE,aluoutE,zeroE);
+ALU aludata(srca3E,srcb3E,alucontrolE,aluoutE,zeroE);
 mux2 #(5) wrmux(rtE,rdE,regdstE,writeregE);
 
 

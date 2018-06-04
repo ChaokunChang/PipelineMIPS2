@@ -14,7 +14,7 @@ assign disdata = RAM[cn1];
 initial begin
 //initialize instruction memory
 	//$readmemh("E:/Vivado Files/MIPS0/memfile.dat",RAM); 
-	$readmemh("E:/Vivado Files/sum1.dat",RAM);
+	$readmemh("E:/Vivado Files/sort.dat",RAM);
 end
 
 assign instr = RAM[PC];

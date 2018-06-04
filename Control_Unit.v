@@ -9,7 +9,7 @@ module ControlUnit(
 	output mem2regE,mem2regM,mem2regW,memwriteM,
 	output pcsrcD,branchD,eqneD,
 	output alusrcE,regdstE,
-	output regwriteE,regwriteM,regwriteW,jumpD,
+	output regwriteE,regwriteM,regwriteW,jumpD,shiftE,
 	output [2:0]alucontrolE,
 	
 	input [8:0]cn3,
@@ -31,9 +31,9 @@ aludec  ad(aluopD,funcD,shiftD,alucontrolD);
 //assign pcsrcD = branchD & equalD;
 assign pcsrcD = (branchD & equalD) ^ (eqneD);
 
-floprc #(8) regE(clk,reset,flushE,
-				{mem2regD,memwriteD,alusrcD,regdstD,regwriteD,alucontrolD},
-				{mem2regE,memwriteE,alusrcE,regdstE,regwriteE,alucontrolE}
+floprc #(9) regE(clk,reset,flushE,
+				{mem2regD,memwriteD,shiftD,alusrcD,regdstD,regwriteD,alucontrolD},
+				{mem2regE,memwriteE,shiftE,alusrcE,regdstE,regwriteE,alucontrolE}
 				);
 
 flopr #(3) regM(clk,reset,
