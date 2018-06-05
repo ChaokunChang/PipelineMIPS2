@@ -9,7 +9,7 @@ module ControlUnit(
 	output mem2regE,mem2regM,mem2regW,memwriteM,
 	output pcsrcD,branchD,eqneD,
 	output alusrcE,regdstE,
-	output regwriteE,regwriteM,regwriteW,jumpD,shiftE,
+	output regwriteE,regwriteM,regwriteW,jumpD,jalD,shiftE,jalE,
 	output [2:0]alucontrolE,
 	
 	input [8:0]cn3,
@@ -25,15 +25,15 @@ wire [2:0]alucontrolD;
 wire memwriteE;
 
 
-maindec md(opD,mem2regD,memwriteD,branchD,eqneD,alusrcD,regdstD,regwriteD,jumpD,aluopD);
+maindec md(opD,mem2regD,memwriteD,branchD,eqneD,alusrcD,regdstD,regwriteD,jumpD,jalD,aluopD);
 aludec  ad(aluopD,funcD,shiftD,alucontrolD);
 
 //assign pcsrcD = branchD & equalD;
 assign pcsrcD = (branchD & equalD) ^ (eqneD);
 
-floprc #(9) regE(clk,reset,flushE,
-				{mem2regD,memwriteD,shiftD,alusrcD,regdstD,regwriteD,alucontrolD},
-				{mem2regE,memwriteE,shiftE,alusrcE,regdstE,regwriteE,alucontrolE}
+floprc #(10) regE(clk,reset,flushE,
+				{mem2regD,memwriteD,shiftD,alusrcD,regdstD,regwriteD,alucontrolD,jalD},
+				{mem2regE,memwriteE,shiftE,alusrcE,regdstE,regwriteE,alucontrolE,jalE}
 				);
 
 flopr #(3) regM(clk,reset,

@@ -7,7 +7,7 @@ module DataPath(
     input pcsrcD,branchD,
     input alusrcE,regdstE,
     input regwriteE,regwriteM,regwriteW,
-    input jumpD,shiftE,
+    input jumpD,jalD,shiftE,jalE,
     input [2:0]alucontrolE,
 	output equalD,
 	output [31:0]pcF,
@@ -33,10 +33,10 @@ wire stallF,stallD;
 wire [4:0] rsD,rtD,rdD,rsE,rtE,rdE;
 wire [4:0] writeregE,writeregM,writeregW;
 wire flushD;
-wire [31:0] pcnextFD,pcnextbrFD,pcplus4F,pcbranchD;
+wire [31:0] pcnextFD,pcnextbrFD,pcplus4F,pcbranchD,pcJ;
 wire [31:0] signimmD,signimmE,signimmshD;
-wire [31:0] srcaD,srca2D,srcaE,srca2E,srca3E;
-wire [31:0] srcbD,srcb2D,srcbE,srcb2E,srcb3E;
+wire [31:0] srca0D,srcaD,srca2D,srcaE,srca2E,srca3E;
+wire [31:0] srcbD,srcb2D,srcbE,srcb2E,srcb3E,srcb4E;
 wire [31:0] pcplus4D,instrD;
 wire [31:0] aluoutE,aluoutW;
 wire [31:0] readdataW,resultW;
@@ -50,12 +50,13 @@ hazard hd(rsD,rtD,rsE,rtE,writeregE,writeregM,writeregW,
         stallF,stallD,flushE);
 
 // next PC
+assign pcJ = {pcplus4D[31:28],instrD[25:0],2'b00};
 mux2 #(32) pcbrmux(pcplus4F,pcbranchD,pcsrcD,pcnextbrFD);
-mux2 #(32) pcmux(pcnextbrFD,{pcplus4D[31:28],instrD[25:0],2'b00},jumpD,pcnextFD);
+mux2 #(32) pcmux(pcnextbrFD,pcJ,jumpD,pcnextFD);
 
 
 //Register File
-RegFile regfile(clk,regwriteW,rsD,rtD,writeregW,resultW,srcaD,srcbD,cn4,regdata);
+RegFile regfile(clk,regwriteW,rsD,rtD,writeregW,resultW,srca0D,srcbD,cn4,regdata);
 
 
 // Fetch stage
@@ -69,9 +70,10 @@ flopenrc #(32) r2D(clk,reset,~stallD,flushD,instrF,instrD);
 SignExt immext(instrD[15:0],signimmD);
 sl2 immsl(signimmD,signimmshD);
 adder pcadd2(pcplus4D,signimmshD,pcbranchD);
-mux2 #(32) forwardadmux(srcaD,aluoutM,forwardaD,srca2D);
+mux2 #(32) forwardadmux(srca0D,aluoutM,forwardaD,srca2D);
 mux2 #(32) forwardbdmux(srcbD,aluoutM,forwardbD,srcb2D);
 eqcmp comp(srca2D,srcb2D,equalD);//what is this?
+mux2 #(32) jalsrca(srca0D,pcJ,jalD,srcaD);
 
 assign opD = instrD[31:26];
 assign funcD = instrD[5:0];
@@ -93,7 +95,8 @@ mux3 #(32) forwardaemux(srcaE,resultW,aluoutM,forwardaE,srca2E);
 mux3 #(32) forwardbemux(srcbE,resultW,aluoutM,forwardbE,srcb2E);
 mux2 #(32) srcamux(srca2E,sa,shiftE,srca3E);
 mux2 #(32) srcbmux(srcb2E,signimmE,alusrcE,srcb3E);
-ALU aludata(srca3E,srcb3E,alucontrolE,aluoutE,zeroE);
+mux2 #(32) srcbmux_jal(srcb3E,0,jalE,srcb4E);
+ALU aludata(srca3E,srcb4E,alucontrolE,aluoutE,zeroE);
 mux2 #(5) wrmux(rtE,rdE,regdstE,writeregE);
 
 

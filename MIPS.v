@@ -34,11 +34,11 @@ wire mem2regW,regwriteW;
 wire eqneD;
 
 ControlUnit CU(clk,reset,opD,funcD,flushE,equalD,mem2regE,mem2regM,mem2regW,memwriteM,pcsrcD,branchD,eqneD,
-alusrcE,regdstE,regwriteE,regwriteM,regwriteW,jumpD,shiftE,alucontrolE,cn3,cudata);
+alusrcE,regdstE,regwriteE,regwriteM,regwriteW,jumpD,jalD,shiftE,jalE,alucontrolE,cn3,cudata);
 //aluimm:ALUIMM;regdst:REGRT
 
 DataPath DP(clk,reset,mem2regE,mem2regM,mem2regW,pcsrcD,branchD,alusrcE,regdstE,regwriteE,regwriteM,
-regwriteW,jumpD,shiftE,alucontrolE,equalD,pcF,instrF,aluoutM,writedataM,readdataM,opD,funcD,flushE,cn3,dpdata);
+regwriteW,jumpD,jalD,shiftE,jalE,alucontrolE,equalD,pcF,instrF,aluoutM,writedataM,readdataM,opD,funcD,flushE,cn3,dpdata);
 
 //display
 
